@@ -59,3 +59,10 @@ urlpatterns = patterns('',
             {'document_root': settings.MEDIA_ROOT, 'path':'robots.txt'}),
             
 )
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += patterns('',
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+    )
+
