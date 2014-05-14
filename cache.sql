@@ -163,30 +163,30 @@ CREATE OR REPLACE FUNCTION update_descriptor()
                     NEW.uptime, (NEW.uptime / 86400),
                     (SELECT unnest(
                                 regexp_matches(
-                                    CAST(NEW.rawdesc AS TEXT),
-                                    E'\\\\012contact\ (.*?)\\\\012'))::TEXT),
+                                    convert_from(NEW.rawdesc,'latin1'),
+                                    'contact (.*?)\n'))),
                     (SELECT regexp_replace(
                                 unnest(
                                     regexp_matches(
-                                        CAST(NEW.rawdesc AS TEXT),
-                                        E'onion-key\\\\012-----BEGIN\ RSA\ PUBLIC\ KEY-----\\\\012(.*)-----END\ RSA\ PUBLIC\ KEY-----'))::CHARACTER(188),
+                                        convert_from(NEW.rawdesc,'latin1'),
+                                        'onion-key\n-----BEGIN RSA PUBLIC KEY-----\n(.*?)\n----'))::CHARACTER(188),
                                 E'\\\\012', E'\n', 'g')),
                     (SELECT regexp_replace(
                                 unnest(
                                     regexp_matches(
-                                        CAST(NEW.rawdesc AS TEXT),
-                                        E'signing-key\\\\012-----BEGIN\ RSA\ PUBLIC\ KEY-----\\\\012(.*)-----END\ RSA\ PUBLIC\ KEY-----'))::CHARACTER(188),
+                                        convert_from(NEW.rawdesc,'latin1'),
+                                        'signing-key\n-----BEGIN RSA PUBLIC KEY-----\n(.*?)\n----'))::CHARACTER(188),
                                 E'\\\\012', E'\n', 'g')),
                     (SELECT regexp_split_to_array(
                                 unnest(
                                     regexp_matches(
-                                        CAST(NEW.rawdesc AS TEXT),
-                                        E'\\\\012([ar][ce][cj][e][pc][t]\ .*)\\\\012router-signature'))::TEXT,
+                                        convert_from(NEW.rawdesc,'latin1'),
+                                        '([ar][ce][cj][e][pc][t]\ .*)\nrouter'))::TEXT,
                                 E'\\\\012')),
                     (SELECT unnest(
                                 regexp_matches(
-                                    CAST(NEW.rawdesc AS TEXT),
-                                    E'\\\\012family\ (.*?)\\\\012'))::TEXT),
+                                    convert_from(NEW.rawdesc,'latin1'),
+                                    'family (.*?)\n'))::TEXT),
                     (SELECT CASE WHEN position('opt hibernating 1'
                                  IN NEW.rawdesc::text) > 0 THEN TRUE
                                  ELSE FALSE END));
