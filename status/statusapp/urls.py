@@ -54,4 +54,8 @@ urlpatterns = patterns('',
     # Media Files
     (r'^static/(?P<path>.*)$', 'django.views.static.serve',
             {'document_root': settings.MEDIA_ROOT}),
+    # ROBOTS
+    (r'^robots\.txt$', 'django.views.static.serve',
+            {'document_root': settings.MEDIA_ROOT, 'path':'robots.txt'}),
+            
 )
